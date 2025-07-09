@@ -1,17 +1,18 @@
 import { VNode, VNodeProps, createTextVNode } from './vnode';
+import { createRuntimeError } from '@/runtime/throw-error';
 
 /**
  * 渲染器配置选项接口
  */
 export interface RendererOptions {
-  // 创建DOM元素
-  createElement: (type: string) => Element
-  // 设置元素文本内容
-  setElementText: (node: Node, text: string) => void
-  // 插入DOM节点
-  insert: (child: Node, parent: Node, anchor?: Node | null) => void
-  // 更新DOM属性
-  patchProps: (el: Element, key: string, prevValue: VNodeProps[string] | null, nextValue: VNodeProps[string] | null) => void
+    // 创建DOM元素
+    createElement: (type: string) => Element
+    // 设置元素文本内容
+    setElementText: (node: Node, text: string) => void
+    // 插入DOM节点
+    insert: (child: Node, parent: Node, anchor?: Node | null) => void
+    // 更新DOM属性
+    patchProps: (el: Element, key: string, prevValue: VNodeProps[string] | null, nextValue: VNodeProps[string] | null) => void
 }
 
 // 类型定义
@@ -35,11 +36,11 @@ export function createRenderer(options: RendererOptions) {
   } = options;
 
   /**
-   * 虚拟DOM打补丁函数
-   * @param n1 旧虚拟节点
-   * @param n2 新虚拟节点
-   * @param container 容器元素
-   */
+     * 虚拟DOM打补丁函数
+     * @param n1 旧虚拟节点
+     * @param n2 新虚拟节点
+     * @param container 容器元素
+     */
   const patch: PatchFn = (n1, n2, container) => {
     if (n1 === null) {
       // 挂载新元素
@@ -58,10 +59,10 @@ export function createRenderer(options: RendererOptions) {
   };
 
   /**
-   * 挂载元素
-   * @param vnode 虚拟节点
-   * @param container 容器元素
-   */
+     * 挂载元素
+     * @param vnode 虚拟节点
+     * @param container 容器元素
+     */
   const mountElement: MountElementFn = (vnode, container) => {
     // 如果节点类型不是字符串，则返回
     if (typeof vnode.type !== 'string') return;
@@ -100,10 +101,10 @@ export function createRenderer(options: RendererOptions) {
   };
 
   /**
-   * 更新元素
-   * @param n1 旧虚拟节点
-   * @param n2 新虚拟节点
-   */
+     * 更新元素
+     * @param n1 旧虚拟节点
+     * @param n2 新虚拟节点
+     */
   const patchElement: PatchElementFn = (n1, n2) => {
     // 获取DOM元素引用
     const el = n2.el = n1.el;
@@ -133,11 +134,11 @@ export function createRenderer(options: RendererOptions) {
   };
 
   /**
-   * 更新子节点
-   * @param n1 旧虚拟节点
-   * @param n2 新虚拟节点
-   * @param container 容器元素
-   */
+     * 更新子节点
+     * @param n1 旧虚拟节点
+     * @param n2 新虚拟节点
+     * @param container 容器元素
+     */
   const patchChildren: PatchChildrenFn = (n1, n2, container) => {
     if (typeof n2.children === 'string') {
       // 新子节点是文本
@@ -262,9 +263,9 @@ export function createRenderer(options: RendererOptions) {
   };
 
   /**
-   * 卸载虚拟节点
-   * @param vnode 虚拟节点
-   */
+     * 卸载虚拟节点
+     * @param vnode 虚拟节点
+     */
   const removeVNode: UnmountFn = (vnode) => {
     if (vnode.el) {
       const parent = vnode.el.parentNode;
@@ -288,6 +289,57 @@ export function createRenderer(options: RendererOptions) {
         patch(prevVNode, vnode, container);
         // 在容器上存储新虚拟节点
         (container as any).__vnode = vnode;
+      }
+    }
+  };
+}
+
+export function getDefaultRendererOption(): RendererOptions {
+  return {
+    // 创建DOM元素
+    createElement: (type) => document.createElement(type),
+    // 设置元素文本内容
+    setElementText: (node, text) => {
+      node.textContent = text;
+    },
+    // 插入DOM节点
+    insert: (child, parent, anchor) => parent.insertBefore(child, anchor || null),
+    // 更新DOM属性
+    patchProps: (el, key, prevValue, nextValue) => {
+      if (key.startsWith('on')) {
+        // 处理事件监听器
+        const eventName = key.slice(2).toLowerCase();
+        if (prevValue && typeof prevValue === 'function') el.removeEventListener(eventName, prevValue as any);
+        if (nextValue && typeof nextValue === 'function') el.addEventListener(eventName, nextValue as any);
+      } else if (key === 'style') {
+        if (typeof prevValue === 'object' && el instanceof HTMLElement) {
+          Object.assign(el.style, nextValue as Partial<CSSStyleDeclaration>);
+        } else {
+          el.setAttribute(key, prevValue as string);
+        }
+      } else if (key === 'class') {
+        const oldClass = el.className;
+        const newClassName: string[] = [];
+        if (Array.isArray(nextValue)) {
+          if (nextValue.join(' ') !== oldClass) el.className = nextValue.join(' ');
+        } else if (typeof nextValue === 'object') {
+          for (const classKey in nextValue) {
+            if (nextValue[classKey] === true) newClassName.push(classKey);
+          }
+          if (newClassName.join(' ') !== oldClass) el.className = newClassName.join(' ');
+        } else if (typeof prevValue === 'string') {
+          if (el.className !== prevValue) el.className = prevValue;
+        } else {
+          createRuntimeError('Props class is not a [string, object, array]', true);
+        }
+        if (el.className === '') el.removeAttribute('class');
+      } else {
+        // 处理普通属性
+        if (nextValue === null) {
+          el.removeAttribute(key);
+        } else {
+          el.setAttribute(key, String(nextValue));
+        }
       }
     }
   };

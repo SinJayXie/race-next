@@ -1,6 +1,6 @@
 
 // 事件处理函数类型
-export type EventHandler = (event: Event) => void;
+export type EventHandler = (event: Event) => any;
 
 // 节点元素类型（包含各种 HTML 元素）
 export type NodeElementType =
@@ -36,14 +36,14 @@ export type NodeElementType =
 // 虚拟节点属性接口
 export interface VNodeProps {
     key?: string | number // 节点唯一标识，用于 diff 算法优化
-    class?: string // CSS 类名
-    style?: Partial<CSSStyleDeclaration> // 内联样式
+    class?: string | string[] | Record<string, boolean>// CSS 类名
+    style?: Partial<CSSStyleDeclaration> | string // 内联样式
 
     // 事件处理函数（以 on 开头的属性）
     [key: `on${string}`]: EventHandler
 
     // 其他属性（字符串、数字、事件处理函数、样式对象等）
-    [key: string]: string | number | EventHandler | Partial<CSSStyleDeclaration> | null | undefined
+    [key: string]: any
 }
 
 // 组件类型（可以是元素类型、字符串或组件类）

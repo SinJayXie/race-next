@@ -3,7 +3,7 @@
  */
 
 import { Component, ComponentOptions } from './component';
-import { createRenderer } from './renderer';
+import { createRenderer, getDefaultRendererOption } from './renderer';
 import { VNodeProps } from './vnode';
 
 export interface App {
@@ -15,43 +15,7 @@ type ComponentConstructor = new (...args: any[]) => Component
 type ComponentInstance = ComponentConstructor | ComponentOptions<any, any>
 
 // Create default renderer with DOM operations
-export const renderer = createRenderer({
-  createElement(type: string): Element {
-    return document.createElement(type);
-  },
-
-  setElementText(node: Node, text: string): void {
-    node.textContent = text;
-  },
-
-  insert(child: Node, parent: Node, anchor: Node | null = null): void {
-    parent.insertBefore(child, anchor);
-  },
-
-  patchProps(el: Element, key: string, prevValue: VNodeProps[string] | null, nextValue: VNodeProps[string] | null): void {
-    if (key.startsWith('on')) {
-      const eventName = key.slice(2).toLowerCase();
-      if (prevValue) {
-        el.removeEventListener(eventName, prevValue as (ev: Event) => void);
-      }
-      if (nextValue) {
-        el.addEventListener(eventName, nextValue as (ev: Event) => void);
-      }
-    } else if (key === 'style') {
-      if (nextValue && el instanceof HTMLElement) {
-        Object.assign(el.style, nextValue as Partial<CSSStyleDeclaration>);
-      } else {
-        el.removeAttribute('style');
-      }
-    } else {
-      if (nextValue === null || nextValue === undefined) {
-        el.removeAttribute(key);
-      } else {
-        el.setAttribute(key, String(nextValue));
-      }
-    }
-  }
-});
+export const renderer = createRenderer(getDefaultRendererOption());
 
 /**
  * Creates a component instance from a constructor or options

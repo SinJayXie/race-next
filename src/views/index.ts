@@ -10,7 +10,8 @@ interface CounterProps {
 
 interface CounterData {
   count: number;
-  count2: number
+  count2: number;
+  isShow: boolean;
 }
 
 export class Counter extends Component<CounterProps, CounterData> {
@@ -21,7 +22,8 @@ export class Counter extends Component<CounterProps, CounterData> {
   protected data(): CounterData {
     return {
       count: 0,
-      count2: 0
+      count2: 0,
+      isShow: true
     };
   }
 
@@ -35,11 +37,19 @@ export class Counter extends Component<CounterProps, CounterData> {
 
   render(h: HelperFunction) {
     return h('div', null, [
-      h('div', { class: 'counter' }, [
-        h('h1', null, ['Count:', h('span', null, this.$data.count + '')]),
+      h('div', { class: { counter: true }}, [
+        h('h1', { style: { fontSize: this.$data.count + 'px' }}, ['Count:', h('span', null, this.$data.count + '')]),
         h('button', { onClick: this.increment }, 'Increment' + this.$data.count),
         h('button', { onClick: () => this.$data.count-- }, 'Sub' + this.$data.count),
         ...new Array(this.$data.count).fill(null).map((_, i) => h('div', { key: i }, String(i)))
+      ]),
+      h('div', {}, [
+        h('div', { style: { display: this.$data.isShow ? 'block' : 'none' }}, 'Show'),
+        h('button', {
+          onClick: () => {
+            this.$data.isShow = !this.$data.isShow;
+          }
+        }, this.$data.isShow ? 'Hide' : 'Show')
       ])
     ]);
   }

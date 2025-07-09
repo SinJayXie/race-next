@@ -1,31 +1,9 @@
 import { VNode, h, HelperFunction } from './vnode';
-import { createRenderer } from './renderer';
+import { createRenderer, getDefaultRendererOption } from './renderer';
+import { createRuntimeError } from '@/runtime/throw-error';
 
 // 创建渲染器
-const renderer = createRenderer({
-  // 创建DOM元素
-  createElement: (type) => document.createElement(type),
-  // 设置元素文本内容
-  setElementText: (node, text) => { node.textContent = text; },
-  // 插入DOM节点
-  insert: (child, parent, anchor) => parent.insertBefore(child, anchor || null),
-  // 更新DOM属性
-  patchProps: (el, key, prevValue, nextValue) => {
-    if (key.startsWith('on')) {
-      // 处理事件监听器
-      const eventName = key.slice(2).toLowerCase();
-      if (prevValue && typeof prevValue === 'function') el.removeEventListener(eventName, prevValue as any);
-      if (nextValue && typeof nextValue === 'function') el.addEventListener(eventName, nextValue as any);
-    } else {
-      // 处理普通属性
-      if (nextValue === null) {
-        el.removeAttribute(key);
-      } else {
-        el.setAttribute(key, String(nextValue));
-      }
-    }
-  }
-});
+const renderer = createRenderer(getDefaultRendererOption());
 
 // 默认属性类型
 type DefaultProps = Record<string, any>
@@ -178,8 +156,12 @@ export class Component<P extends DefaultProps = DefaultProps, D extends DefaultD
         }
         this.$vnode = newVNode;
       }
-    } catch (e) {
-
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        const stack = String(e.stack).split('\n');
+        stack.shift();
+        createRuntimeError([e.message, ...stack].join('\n'));
+      }
     }
   }
 
