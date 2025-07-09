@@ -15,6 +15,7 @@
     "*.html",
     "public"
   ],
+  "license": "MIT",
   "main": "./dist/race.umd.cjs",
   "module": "./dist/race.js",
   "types": "./index.d.ts",
