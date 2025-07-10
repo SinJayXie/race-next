@@ -4,7 +4,6 @@
 
 import { Component, ComponentOptions } from './component';
 import { createRenderer, getDefaultRendererOption } from './renderer';
-import { VNodeProps } from './vnode';
 
 export interface App {
   mount: (rootContainer: string | Element) => void

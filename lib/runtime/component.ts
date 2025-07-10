@@ -1,6 +1,6 @@
 import { VNode, h, HelperFunction } from './vnode';
 import { createRenderer, getDefaultRendererOption } from './renderer';
-import { createRuntimeError } from '@/runtime/throw-error';
+import { createRuntimeError } from './throw-error';
 
 // 创建渲染器
 const renderer = createRenderer(getDefaultRendererOption());

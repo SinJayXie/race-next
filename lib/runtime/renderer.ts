@@ -1,5 +1,5 @@
 import { VNode, VNodeProps, createTextVNode } from './vnode';
-import { createRuntimeError } from '@/runtime/throw-error';
+import { createRuntimeError } from './throw-error';
 
 /**
  * 渲染器配置选项接口
@@ -50,6 +50,9 @@ export function createRenderer(options: RendererOptions) {
       removeVNode(n1);
     } else if (n1.type !== n2.type) {
       // 如果节点类型不同，则替换节点
+      removeVNode(n1);
+      mountElement(n2, container);
+    } else if ((n1.props && n2.props) && (n1.props.key !== n2.props.key)) {
       removeVNode(n1);
       mountElement(n2, container);
     } else {
@@ -306,7 +309,10 @@ export function getDefaultRendererOption(): RendererOptions {
     insert: (child, parent, anchor) => parent.insertBefore(child, anchor || null),
     // 更新DOM属性
     patchProps: (el, key, prevValue, nextValue) => {
-      if (key.startsWith('on')) {
+      if (key === 'key') {
+        const _el = el as any;
+        _el._key = nextValue;
+      } else if (key.startsWith('on')) {
         // 处理事件监听器
         const eventName = key.slice(2).toLowerCase();
         if (prevValue && typeof prevValue === 'function') el.removeEventListener(eventName, prevValue as any);
