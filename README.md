@@ -61,35 +61,97 @@ Race Js 是一个基于虚拟 DOM 的前端框架，设计目标是提供核心�
 
 
 ```typescript
-import {Component, h} from './component';
-import {render} from './renderer';
+import {Component, createVirtualNode, createApp} from 'race-next';
 
-// 定义一个计数器组件
-class Counter extends Component {
-    data() {
+// 输入组件数据类型
+type InputCompData = {
+    value: string;
+};
+
+// 输入组件
+class InputComp extends Component<{ key: string }, InputCompData> {
+    protected data(): InputCompData {
         return {
-            count: 0
+            value: ''
         };
     }
 
-    increment() {
-        this.$data.count++;
+    // 输入事件处理
+    private handleInput(ev: InputEvent) {
+        this.$data.value = (ev.target as HTMLInputElement).value;
     }
 
-    decrement() {
-        this.$data.count--;
+    // 挂载生命周期
+    public mounted() {
+        console.log('InputComp mounted');
     }
 
-    render(h) {
-        return h('div', {class: 'counter'}, [
-            h('h1', null, `Count: ${this.$data.count}`),
-            h('button', {onClick: () => this.increment()}, 'Increment'),
-            h('button', {onClick: () => this.decrement()}, 'Decrement')
+    render() {
+        return createVirtualNode('div', {key: this.$props.key}, [
+            createVirtualNode('input', {
+                onInput: this.handleInput.bind(this),
+                value: this.$data.value
+            }),
+            createVirtualNode('button', {
+                onClick: () => {
+                    // 触发deleteElement事件，传递当前值和key
+                    this.$emit('deleteElement', this.$props.key, this.$data.value);
+                }
+            }, 'Delete'),
+            createVirtualNode('span', null, `Current: ${this.$data.value}`)
         ]);
     }
 }
 
-// 渲染组件到页面
-const app = new Counter();
-app.mount(document.getElementById('app')!);
+// 根组件数据类型
+type AppData = {
+    count: number;
+    list: string[];
+};
+
+// 根组件
+export default class App extends Component<object, AppData> {
+    protected data(): AppData {
+        return {
+            count: 1,
+            list: []
+        };
+    }
+
+    // 删除元素处理
+    private handleDelete(key: string, value: string) {
+        console.log(`Delete: key=${key}, value=${value}`);
+        this.$data.list = this.$data.list.filter(item => item !== key);
+    }
+
+    render() {
+        return createVirtualNode('div', {className: 'app'}, [
+            createVirtualNode('h1', null, 'Todo List'),
+            createVirtualNode('div', null, `Count: ${this.$data.count}`),
+            createVirtualNode('button', {
+                onClick: () => {
+                    // 添加新元素
+                    this.$data.list.push(String(this.$data.count));
+                    this.$data.count++;
+                }
+            }, 'Add Item'),
+            // 渲染列表
+            ...this.$data.list.map(key =>
+                createVirtualNode(InputComp, {
+                    key,
+                    emits: {
+                        deleteElement: this.handleDelete.bind(this)
+                    }
+                })
+            ),
+            createVirtualNode('div', null, 'End of list')
+        ]);
+    }
+}
+
+createApp({
+    Component: App
+}).mount('#root');
+
+
 ```
