@@ -53,7 +53,7 @@ Race Js 是一个基于虚拟 DOM 的前端框架，设计目标是提供核心�
 
 
 ```bash
->git clone https://github.com/SinJayXie/race-js.git
+>git clone https://github.com/SinJayXie/race-next.git
 >cd race-js
 ```
 
