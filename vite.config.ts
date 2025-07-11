@@ -1,5 +1,5 @@
-import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 
 export default defineConfig({
   build: {
@@ -11,8 +11,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // eslint-disable-next-line no-undef
       '@': resolve(__dirname, 'lib')
     }
   }
 });
+

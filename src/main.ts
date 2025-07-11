@@ -1,7 +1,6 @@
 import { createApp } from '@/race';
-import { Counter } from './views';
+import App from './App';
 
-// 创建 App
-const app = createApp(Counter);
-// 挂载 App
-app.mount('#race');
+createApp({
+  Component: App
+}).mount('#root');

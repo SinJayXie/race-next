@@ -11,6 +11,7 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
       'accessor-pairs': 2,
       'arrow-spacing': [2, {
         'before': true,
@@ -179,4 +180,5 @@ export default defineConfig([
       'array-bracket-spacing': [2, 'never']
     }
   }
+
 ]);

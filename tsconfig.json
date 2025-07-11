@@ -21,6 +21,6 @@
       "@/*": ["lib/*"]
     }
   },
-  "include": ["lib/race.ts"],
+  "include": ["lib/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

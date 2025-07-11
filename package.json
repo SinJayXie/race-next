@@ -1,40 +1,48 @@
 {
-  "name": "race",
-  "private": true,
-  "version": "1.0.2",
+  "name": "race-next",
+  "version": "1.0.0",
+  "description": "A lightweight front-end framework featuring component system, reactive data binding, virtual DOM rendering, lifecycle hooks and component event communication.",
+  "keywords": [
+    "frontend",
+    "framework",
+    "component",
+    "reactive",
+    "virtual dom",
+    "lifecycle",
+    "event emit",
+    "renderer"
+  ],
   "type": "module",
   "files": [
     "dist",
-    "lib",
-    "src",
-    "index.d.ts",
-    ".*",
-    "*.ts",
-    "*.js",
-    "*.json",
-    "*.html",
-    "public"
+    "LICENSE"
   ],
-  "license": "MIT",
+  "author": {
+    "name": "dishuyl",
+    "email": "sinjayxie@gmail.com",
+    "url": "https://github.com/sinjayxie"
+  },
   "main": "./dist/race.umd.cjs",
   "module": "./dist/race.js",
-  "types": "./index.d.ts",
+  "types": "./dist/race.d.ts",
   "exports": {
-    "types": "./index.d.ts",
+    "types": "./dist/race.d.ts",
     "import": "./dist/race.js",
     "require": "./dist/race.umd.cjs"
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc"
+    "build": "vite build && tsc",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.0.12",
     "eslint": "^9.30.1",
     "globals": "^16.3.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.36.0",
     "vite": "^6.3.5"
-  }
+  },
+  "license": "MIT"
 }
