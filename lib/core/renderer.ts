@@ -137,6 +137,9 @@ export class Renderer {
   }
 
   private patchChildren(n1: VirtualNode, n2: VirtualNode) {
+    // 新增：检查新子节点中是否有重复的key
+    this.checkDuplicateKeys(n2.children);
+
     const oldChildren = this.normalizeChildren(n1.children);
     const newChildren = this.normalizeChildren(n2.children);
     const parentEl = n1.el as Element;
@@ -211,6 +214,22 @@ export class Renderer {
         this.mountNode(node, parentEl, referenceNode);
       });
     }
+  }
+
+  // 新增：检查重复key的方法
+  private checkDuplicateKeys(children: any) {
+    if (!Array.isArray(children)) return;
+
+    const keys = new Set();
+    children.forEach((child: VirtualNode, index: number) => {
+      if (!(child instanceof VirtualNode) || child.key === null) return;
+
+      if (keys.has(child.key)) {
+        console.error('Duplicate virtual node:\n', child);
+        createRuntimeError(`Duplicate key found: "${child.key}" at index ${index}. Keys must be unique.`, true);
+      }
+      keys.add(child.key);
+    });
   }
 
   private unmountNode(vNode: VirtualNode) {

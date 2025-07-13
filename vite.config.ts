@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 
 export default defineConfig({
   build: {
+    minify: true,
     lib: {
       entry: './lib/race.ts',
       name: 'Race',

@@ -42,7 +42,9 @@ class InputComp extends Component<{ key: string }, InputCompData> {
 
 // 根组件数据类型
 type AppData = {
-  count: number;
+  count: {
+    data: number
+  };
   list: string[];
 };
 
@@ -50,7 +52,9 @@ type AppData = {
 export default class App extends Component<object, AppData> {
   protected data(): AppData {
     return {
-      count: 1,
+      count: {
+        data: 1
+      },
       list: []
     };
   }
@@ -64,12 +68,12 @@ export default class App extends Component<object, AppData> {
   render() {
     return createVirtualNode('div', { className: 'app' }, [
       createVirtualNode('h1', null, 'Todo List'),
-      createVirtualNode('div', null, `Count: ${this.$data.count}`),
+      createVirtualNode('div', null, `Count: ${this.$data.count.data}`),
       createVirtualNode('button', {
         onClick: () => {
           // 添加新元素
-          this.$data.list.push(String(this.$data.count));
-          this.$data.count++;
+          this.$data.list.push(String(this.$data.count.data));
+          // this.$data.count.data++;
         }
       }, 'Add Item'),
       // 渲染列表
