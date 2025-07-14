@@ -1,6 +1,6 @@
 {
   "name": "race-next",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A lightweight front-end framework featuring component system, reactive data binding, virtual DOM rendering, lifecycle hooks and component event communication.",
   "keywords": [
     "frontend",
@@ -33,7 +33,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc",
-    "prepublishOnly": "npm run build"
+    "build:publish": "npm run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
